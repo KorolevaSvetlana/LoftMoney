@@ -11,13 +11,17 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class BudgetFragment extends Fragment {
 
     private static final int REQUEST_CODE = 100;
     private ItemsAdapter adapter;
+    private int position;
 
+    public BudgetFragment(int position) {this.position=position;}
 
     @Nullable
     @Override
@@ -34,11 +38,17 @@ public class BudgetFragment extends Fragment {
         });
 
         RecyclerView recyclerView =view.findViewById(R.id.budget_item_list);
-        adapter = new ItemsAdapter();
+
+        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation()));
+
+        adapter = new ItemsAdapter(position);
         recyclerView.setAdapter(adapter);
         adapter.AddItem(new Item("Бензин", 1200));
         adapter.AddItem(new Item("Сапоги", 4500));
         adapter.AddItem(new Item("Куртка мембранная р.42", 5600));
+
 
 
         return view;
