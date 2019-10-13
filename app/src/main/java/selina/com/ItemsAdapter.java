@@ -5,22 +5,32 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static selina.com.R.id.price_view;
+
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
     private List<Item> mItemsList = new ArrayList<Item>();
+    private int position;
+
+    public ItemsAdapter(int position) {this.position=position;}
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = View.inflate(parent.getContext(), R.layout.item_view, null);
-
+        if (position == 1) {
+            TextView textView = itemView.findViewById(R.id.price_view);
+            textView.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.apple_green));
+        }
         return new ItemViewHolder(itemView);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
@@ -45,7 +55,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             super(itemView);
 
         mNameView =itemView.findViewById(R.id.name_view);
-        mPriceView =itemView.findViewById(R.id.price_view);
+        mPriceView =itemView.findViewById(price_view);
         }
 
         public void bindItem (final Item item){
@@ -56,3 +66,4 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         }
     }
 }
+
