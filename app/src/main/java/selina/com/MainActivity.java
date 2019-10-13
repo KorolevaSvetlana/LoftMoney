@@ -1,56 +1,56 @@
 package selina.com;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
-import android.content.ClipData;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.Button;
+
+import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int REQUEST_CODE = 100;
-    private ItemsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button callAddButton=findViewById(R.id.call_add_item_activity);
-        callAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(MainActivity.this, AddItemActivity.class), REQUEST_CODE);
-            }
-        });
 
-        RecyclerView recyclerView =findViewById(R.id.budget_item_list);
-        adapter = new ItemsAdapter();
-        recyclerView.setAdapter(adapter);
-        adapter.AddItem(new Item("Бензин", 1200));
-        adapter.AddItem(new Item("Сапоги", 4500));
-        adapter.AddItem(new Item("Куртка мембранная р.42", 5600));
+
+        TabLayout tabLayout=findViewById(R.id.tabs);
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.expencis));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.income));
+
+        ViewPager viewPager = findViewById(R.id.viewpager);
+        viewPager.setAdapter(new BudgetPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT));
+
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.getTabAt(0).setText(R.string.expencis);
+        tabLayout.getTabAt(1).setText(R.string.income);
+
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    static class BudgetPagerAdapter extends FragmentPagerAdapter {
 
-        int price;
-        try {
-            price=Integer.parseInt(data.getStringExtra("price"));
-        } catch(NumberFormatException e) {
-            price = 0;
+        public BudgetPagerAdapter(@NonNull FragmentManager fm, int behavior) {
+            super(fm, behavior);
         }
 
-        if (requestCode==REQUEST_CODE && resultCode==RESULT_OK) {
-            adapter.AddItem(new Item(data.getStringExtra("name"), price));
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            return new BudgetFragment();
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
         }
     }
+
+
 }
