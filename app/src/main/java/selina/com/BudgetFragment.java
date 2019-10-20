@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
@@ -24,12 +25,12 @@ import retrofit2.Response;
 
 public class BudgetFragment extends Fragment {
 
-    private static final int REQUEST_CODE = 100;
+    public static final int REQUEST_CODE = 100;
     private static final String COLOR_ID = "colorId";
     private static final String TYPE = "fragmentType";
 
     private ItemsAdapter adapter;
-    // private int position;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private Api mApi;
 
@@ -54,19 +55,22 @@ public class BudgetFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_budget, null);
 
-        Button callAddButton = view.findViewById(R.id.call_add_item_activity);
-        callAddButton.setOnClickListener(new View.OnClickListener() {
+        RecyclerView recyclerView = view.findViewById(R.id.budget_item_list);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(getActivity(), AddItemActivity.class), REQUEST_CODE);
+            public void onRefresh() {
+                loadItems();
             }
         });
 
-        RecyclerView recyclerView = view.findViewById(R.id.budget_item_list);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -110,23 +114,20 @@ public class BudgetFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<Status> call, Throwable t) {
-
                 }
             });
-
-
         }
-
     }
 
     public void loadItems() {
-
         final String token = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(MainActivity.TOKEN, "");
 
         Call<List<Item>> items= mApi.getItems(getArguments().getString(TYPE), token);
         items.enqueue(new Callback<List<Item>>() {
             @Override
             public void onResponse(Call<List<Item>> call, Response<List<Item>> response) {
+                adapter.clearItems();
+                mSwipeRefreshLayout.setRefreshing(false);
                 List<Item> items = response.body();
                 for (Item item : items) {
                     adapter.AddItem(item);
@@ -135,6 +136,7 @@ public class BudgetFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Item>> call, Throwable t) {
+                mSwipeRefreshLayout.setRefreshing(false);
 
             }
         });
