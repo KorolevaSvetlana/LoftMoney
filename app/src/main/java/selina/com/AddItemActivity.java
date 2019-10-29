@@ -86,7 +86,11 @@ public class AddItemActivity extends AppCompatActivity {
 
     public void checkEditTextHasText() {
         mAddButton.setEnabled(!TextUtils.isEmpty(mName) && !TextUtils.isEmpty(mPrice));
-
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.from_left_in, R.anim.from_right_out);
+    }
 }
