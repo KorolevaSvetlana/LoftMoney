@@ -2,6 +2,8 @@ package selina.com;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -21,13 +23,17 @@ public class MainActivity extends AppCompatActivity {
     public static final String INCOME = "income";
     public static final String TOKEN = "token";
 
+    private TabLayout mTabLayout;
+    private Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
+        mTabLayout = findViewById(R.id.tabs);
+        mToolbar = findViewById(R.id.toolbar);
 
         final ViewPager viewPager = findViewById(R.id.viewpager);
         final BudgetPagerAdapter adapter = new BudgetPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
@@ -45,9 +51,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setText(R.string.expencis);
-        tabLayout.getTabAt(1).setText(R.string.income);
+        mTabLayout.setupWithViewPager(viewPager);
+        mTabLayout.getTabAt(0).setText(R.string.expencis);
+        mTabLayout.getTabAt(1).setText("Доходы");
+
+        mApi = ((LoftApp) getApplication()).getApi();
 
 
         for(Fragment fragment : getSupportFragmentManager().getFragments())    {
