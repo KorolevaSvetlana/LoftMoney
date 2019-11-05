@@ -10,21 +10,32 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.view.ActionMode;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXPENSE = "expense";
     public static final String INCOME = "income";
+    private static final String USER_ID = "skoroleva";
     public static final String TOKEN = "token";
 
     private TabLayout mTabLayout;
     private Toolbar mToolbar;
+
+    private Api mApi;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 final int activeFragmentIndex = viewPager.getCurrentItem();
                 Fragment activeFragment = getSupportFragmentManager().getFragments().get(activeFragmentIndex);
                 activeFragment.startActivityForResult(new Intent(MainActivity.this, AddItemActivity.class), BudgetFragment.REQUEST_CODE);
-                overridePendingTransition(R.anim.from_right_in, R.anim.from_left_out);
             }
         });
 
@@ -57,14 +67,45 @@ public class MainActivity extends AppCompatActivity {
 
         mApi = ((LoftApp) getApplication()).getApi();
 
+        final String token = PreferenceManager.getDefaultSharedPreferences(this).getString(TOKEN, "");
+        if (TextUtils.isEmpty(token)) {
 
-        for(Fragment fragment : getSupportFragmentManager().getFragments())    {
-        if (fragment instanceof BudgetFragment) {
-            ((BudgetFragment) fragment).loadItems();
+            Call<Status> auth = mApi.auth(USER_ID);
+            auth.enqueue(new Callback<Status>() {
+
+                @Override
+                public void onResponse(Call<Status> call, Response<Status> response) {
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+                    editor.putString(TOKEN, response.body().getToken());
+                    editor.apply();
+
+                    for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                        if (fragment instanceof BudgetFragment) {
+                            ((BudgetFragment)fragment).loadItems();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Status> call, Throwable t) {
+                }
+            });
         }
     }
-}
 
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        super.onActionModeStarted(mode);
+        mTabLayout.setBackgroundColor(ContextCompat.getColor(this,R.color.dark_gray_blue));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.dark_gray_blue));
+    }
+
+    @Override
+    public void onActionModeFinished(ActionMode mode) {
+        super.onActionModeFinished(mode);
+        mTabLayout.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary));
+    }
 
     static class BudgetPagerAdapter extends FragmentPagerAdapter {
 
@@ -91,4 +132,6 @@ public class MainActivity extends AppCompatActivity {
             return 2;
         }
     }
+
+
 }
