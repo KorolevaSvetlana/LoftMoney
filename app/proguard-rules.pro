@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class selina.com.AddItemRequest {*;}
+-keep class selina.com.AuthResponse {*;}
+-keep class selina.com.BalanceResponse {*;}
+-keep class selina.com.Item {*;}
+-keep class selina.com.Status {*;}
+
