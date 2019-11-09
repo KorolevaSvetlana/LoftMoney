@@ -3,6 +3,9 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+    lintOptions {
+        checkReleaseBuilds false
+    }
     defaultConfig {
         applicationId "selina.com"
         minSdkVersion 21
@@ -11,10 +14,43 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    buildTypes {
+
+    signingConfigs {
         release {
-            minifyEnabled false
+            storeFile file ("relase.keystore")
+            storePassword 'koroleva'
+            keyAlias 'koroleva'
+            keyPassword 'koroleva'
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            buildConfigField("String", "URL", "\"https://loftschool.com/android-api/basic/v1/\"")
+            resValue("string", "app_name", "loftmoney-debug")
+        }
+        release {
+            signingConfig signingConfigs.release
+            buildConfigField("String", "URL", "\"https://loftschool.com/android-api/basic/v1/\"")
+            resValue("string", "app_name", "LoftMoney")
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions 'target'
+
+    productFlavors {
+        mobile {
+
+            resValue("String", "app_name", "loftmoney-mobile")
+            applicationId "ru.loftmoney.test"
+        }
+
+        beta {
+            resValue("String", "app_name", "loftmoney-beta")
+            applicationIdSuffix ".beta"
         }
     }
 }

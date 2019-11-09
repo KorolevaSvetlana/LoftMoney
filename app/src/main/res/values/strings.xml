@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">LoftMoney</string>
     <string name="edittext_name_hint">Title</string>
     <string name="edittext_price_hint">Price</string>
     <string name="add_button_title">Add</string>
@@ -7,7 +6,12 @@
     <string name="expencis">Расходы</string>
     <string name="income">Доходы</string>
     <string name="activity_main_toolbar_title">Учет бюджета</string>
-    <string name="enter">ВОЙТИ</string>
+    <string name="selected">Выделено: %1$s</string>
+    <string name="remove">Удалить</string>
+    <string name="confirmation">Вы действительно хотите удалить выбранные пункты?</string>
+    <string name="balance">Баланс</string>
+    <string name="expenses">Расход</string>
+    <string name="finances">Доступные финансы</string>
 
 
 </resources>

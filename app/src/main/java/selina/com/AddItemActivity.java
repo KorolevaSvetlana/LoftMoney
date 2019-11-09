@@ -91,6 +91,6 @@ public class AddItemActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.from_left_in, R.anim.from_right_out);
+//        overridePendingTransition(R.anim.from_left_in, R.anim.from_right_out);
     }
 }
